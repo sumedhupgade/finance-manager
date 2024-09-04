@@ -1,26 +1,36 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebaseConfig";
+import { login } from "../../services/authService";
 
-const Login = ({setUser}) => {
+const Login = ({ setUser }) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const navigation = useNavigate()
+  const [error, setError] = useState("");
+  const navigation = useNavigate();
   const handleChange = (e) => {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
   const handleLogin = (e) => {
-    e.preventDefault()
-    signInWithEmailAndPassword(auth, formData.email, formData.password).then((response) => {
-        console.log(response);
-        setUser(response.user)
-        navigation('/dashboard')
-    }).catch((error)=>{
-        console.error(error)
-    })
-  }
+    e.preventDefault();
+
+    login(formData)
+      .then((response) => {
+        setUser(response.user);
+        localStorage.setItem("user", JSON.stringify(response.user));
+        localStorage.setItem("token", response.token);
+        setTimeout(() => {
+          navigation("/dashboard");
+        }, 300);
+      })
+      .catch((error) => {
+        console.error(error);
+        setError(error.message);
+        setTimeout(() => {
+          setError("");
+        }, 3000);
+      });
+  };
   return (
     <div className="flex min-h-full flex-col items-center justify-center px-6 py-12 lg:px-8">
       <div className="card auth-card">
@@ -52,7 +62,7 @@ const Login = ({setUser}) => {
                   autoComplete="email"
                   onChange={handleChange}
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
@@ -82,10 +92,11 @@ const Login = ({setUser}) => {
                   onChange={handleChange}
                   autoComplete="current-password"
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
             </div>
+            {error && <span className="error">{error}</span>}
 
             <div>
               <button

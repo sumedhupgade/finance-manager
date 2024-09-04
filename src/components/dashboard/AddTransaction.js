@@ -3,7 +3,7 @@ import { addTransactions } from "../../services/transactionService";
 
 const AddTransaction = ({ handleSave }) => {
   const [form, SetForm] = useState({
-    type: "expense",
+    type: "Sabji",
     description: "",
     date: new Date(),
     amount: "",
@@ -21,10 +21,9 @@ const AddTransaction = ({ handleSave }) => {
     try {
       SetForm({ ...form, date: new Date() });
       const newTransaction = await addTransactions(form);
-      console.log(newTransaction);
       handleSave(newTransaction, form);
       SetForm({
-        type: "expense",
+        type: "Sabji",
         description: "",
         date: new Date(),
         amount: "",
@@ -37,17 +36,7 @@ const AddTransaction = ({ handleSave }) => {
       onSubmit={handleSubmit}
       className="p-4 bg-white rounded shadow-lg mb-6"
     >
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Description"
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          required
-          className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-        />
-      </div>
+      
       <div className="mb-4">
         <input
           type="number"
@@ -62,10 +51,25 @@ const AddTransaction = ({ handleSave }) => {
       <div className="mb-4">
         <select value={form.type} required name="type" onChange={handleChange}
         className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-          <option value="expense">Expense</option>
-          <option value="income">Income</option>
+          <option value="sabji">Sabji</option>
+          <option value="kirana">Kirana</option>
+          <option value="dudh/dahi">Dudh</option>
+          <option value="gadi">Gadi</option>
           <option value="investment">Investment</option>
+          <option value="Credit Card">Credit Card Bill</option>
+          <option value="Electricity">Electricity Bill</option>
+          <option value="misc">Misc</option>
         </select>
+      </div>
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Description"
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        />
       </div>
       <button
         type="submit"

@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../../firebaseConfig";
 import { useNavigate } from "react-router-dom";
-import { setDoc, doc } from "firebase/firestore";
+import { signUp } from "../../services/authService";
 
 const Signup = ({ setUser }) => {
   const [formData, setFormData] = useState({
@@ -20,31 +18,13 @@ const Signup = ({ setUser }) => {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      ).then((response) => {
+      await signUp(formData).then((response) => {
         setUser(response.user);
-        const date = new Date();
-        const year = date.getFullYear().toString();
-        const month = ("0" + (date.getMonth() + 1)).slice(-2); // Format month to 2 digits
-        setDoc(doc(db, "users", response.user.uid), {
-          userInfo: {
-            name: formData.name,
-            email: formData.email,
-            userId: response.user.uid,
-          },
-          transactions: {
-            [year]: {
-                [month]: {
-                    total: 0,
-                    transactions: []
-                }
-            },
-          },
-        });
-        navigate("/dashboard");
+        localStorage.setItem("user", JSON.stringify(response.user));
+        localStorage.setItem("token", response.token);
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 300);
       });
     } catch (err) {
       setError("Failed to create an account. Please try again.");
