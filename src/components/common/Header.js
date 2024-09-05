@@ -25,7 +25,7 @@ const Header = ({ setUser }) => {
       >
         <div className="flex lg:flex-1">
           <a href="#" className="-m-1.5 p-1.5">
-            <span className="sr-only">Your Company</span>
+            <span className="sr-only">Finance</span>
             <img
               className="h-8 w-auto"
               src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
@@ -101,17 +101,15 @@ const Header = ({ setUser }) => {
                 </svg>
               </button>
             </div>
-            <div className="mt-6 flow-root">
-              <div className="-my-6 divide-y divide-gray-500/10">
-                <div className="space-y-2 py-6">
-                  <div className="py-6">
+            <div className=" flow-root">
+              <div className=" divide-y divide-gray-500/10">
+                <div className="space-y-2 py-3">
                     <a
-                      href="#"
+                      href="#" onClick={logOut}
                       className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                     >
-                      Log in
+                      Log out
                     </a>
-                  </div>
                 </div>
               </div>
             </div>
