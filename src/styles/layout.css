@@ -1,3 +1,7 @@
+.scollable-parent{
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+}
 .card {
     color: #000;
     border: 1px solid #dad9d8;
