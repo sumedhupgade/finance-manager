@@ -17,9 +17,9 @@ const TransactionList = ({
   };
   return (
     <div className="p-4 bg-white rounded shadow-lg">
-      <div className="flex lg:flex-row mb-4 flex-col align-center lg:gap-2 gap-1">
+      <div className="flex sm:flex-row mb-4 flex-col align-center sm:gap-2 gap-1">
         <h2 className="text-2xl font-bold">Recent Transactions</h2>
-        <div className="lg:ml-auto flex gap-2 justify-center">
+        <div className="sm:ml-auto flex gap-2">
           <select
             style={{ width: "100px", height: "32px" }}
             name="type"

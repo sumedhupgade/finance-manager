@@ -1,4 +1,4 @@
-import axios from "axios";
+import axiosInstance from '../context/LoadingContext'
 const API_URL = process.env.REACT_APP_API_URL + "transactions";
 const getAuthConfig = () => {
   const token = localStorage.getItem("token");
@@ -8,7 +8,7 @@ const getAuthConfig = () => {
 };
 export const getTransactions = async (year,month) => {
   try {
-    const response = await axios.get(`${API_URL}?year=${year}&month=${month}`, getAuthConfig());
+    const response = await axiosInstance.get(`${API_URL}?year=${year}&month=${month}`, getAuthConfig());
     return response.data;
   } catch (error) {
     console.error("Error fetching transactions:", error);
@@ -18,7 +18,7 @@ export const getTransactions = async (year,month) => {
 
 export const addTransactions = async (data) => {
   try {
-    const response = await axios.post(API_URL, data, getAuthConfig());
+    const response = await axiosInstance.post(API_URL, data, getAuthConfig());
     return response.data;
   } catch (error) {
     console.error("Error fetching transactions:", error);
@@ -28,7 +28,7 @@ export const addTransactions = async (data) => {
 
 export const deleteTransaction = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/${id}`, getAuthConfig());
+    const response = await axiosInstance.delete(`${API_URL}/${id}`, getAuthConfig());
     return response.data;
   } catch (error) {
     console.error("Error deleting transaction:", error);
