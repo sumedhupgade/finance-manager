@@ -34,10 +34,10 @@ const AddTransaction = ({ handleSave }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-white rounded shadow-lg mb-6"
+      className="p-4 bg-white rounded shadow-lg mb-4 md:mb-0 grid grid-cols-1 flex-col md:grid-cols-4 md:flex-row gap-4 items-center"
     >
       
-      <div className="mb-4">
+      <div className="">
         <input
           type="number"
           placeholder="Amount"
@@ -48,7 +48,7 @@ const AddTransaction = ({ handleSave }) => {
           className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
         />
       </div>
-      <div className="mb-4">
+      <div className="">
         <select value={form.type} required name="type" onChange={handleChange}
         className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
           <option value="sabji">Sabji</option>
@@ -56,12 +56,13 @@ const AddTransaction = ({ handleSave }) => {
           <option value="dudh/dahi">Dudh</option>
           <option value="gadi">Gadi</option>
           <option value="investment">Investment</option>
+          <option value="EMI">EMI</option>
           <option value="Credit Card">Credit Card Bill</option>
           <option value="Electricity">Electricity Bill</option>
           <option value="misc">Misc</option>
         </select>
       </div>
-      <div className="mb-4">
+      <div className="">
         <input
           type="text"
           placeholder="Description"
@@ -73,7 +74,7 @@ const AddTransaction = ({ handleSave }) => {
       </div>
       <button
         type="submit"
-        className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+        className="bg-blue-500 text-white px-4 h-full rounded hover:bg-blue-600"
       >
         Add Transaction
       </button>

@@ -70,8 +70,8 @@ const TransactionList = ({
               className="flex justify-between items-start py-2 border-b"
             >
               <span className="pr-1">
-                Rs {transaction.amount} ({transaction.type}) -{" "}
-                {transaction.description}
+                Rs {transaction.amount} ({transaction.type}) - {transaction.date} -{" "}
+                {transaction.description} 
               </span>
               <button
                 onClick={() => removeTransaction(transaction._id, index)}
