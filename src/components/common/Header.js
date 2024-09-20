@@ -34,7 +34,7 @@ const Header = ({ setUser }) => {
             />
           </a>
         </div>
-        <div className="me-2">{userInfo.username}</div>
+        <div className="me-2 ms-auto">{userInfo.username}</div>
         <div className="flex">
           <button
             type="button"

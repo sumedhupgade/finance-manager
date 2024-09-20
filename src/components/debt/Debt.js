@@ -12,7 +12,7 @@ const Debts = () => {
     amount: "",
     debt_type: "Personal",
     emi_amount: "",
-    owed_to:  userInfo.id,
+    owed_to: userInfo.id,
     startDate: "",
     endDate: "",
     emiDueDate: "",
@@ -36,6 +36,11 @@ const Debts = () => {
     } catch (error) {}
   }, []);
 
+  const getUserNameById = (userId) => {
+    const user = users.find((user) => user._id === userId);
+    return user ? user.username : "Bank"; // Fallback if user not found
+  };
+
   useEffect(() => {
     fetchDebts();
     fetchUsers();
@@ -52,8 +57,7 @@ const Debts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log(debtForm);
-      const newTransaction = await addDebt(debtForm);
+      await addDebt(debtForm);
       setDebtForm({
         amount: "",
         debt_type: "Personal",
@@ -68,12 +72,6 @@ const Debts = () => {
 
   return (
     <div className="flex min-h-full flex-col items-center justify-center px-6 py-12 lg:px-8">
-      {debt &&
-        debt.map((debt) => (
-          <div key={debt._id} onClick={() => setLoanDetails(debt)}>
-            {debt.amount}
-          </div>
-        ))}
       <div className="card auth-card sm:mx-auto sm:w-full sm:max-w-sm">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
@@ -209,6 +207,19 @@ const Debts = () => {
             Add Debt
           </button>
         </form>
+      </div>
+      <div className="card auth-card sm:mx-auto sm:w-full sm:max-w-sm mt-3">
+        <h2 className="text-2xl font-bold">Debt Transactions</h2>
+        {debt &&
+          debt.map((debt) => (
+            <div
+              className="flex justify-between items-start py-2 border-b"
+              key={debt._id}
+              onClick={() => setLoanDetails(debt)}
+            >
+              {debt.amount} - {getUserNameById(debt.owed_to)}
+            </div>
+          ))}
       </div>
       {/* {loanDetails && loanDetails.amount && (
         <LoanEMICalculator loanDetails={loanDetails}></LoanEMICalculator>

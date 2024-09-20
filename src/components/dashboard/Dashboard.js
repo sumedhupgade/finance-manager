@@ -35,7 +35,7 @@ const Dashboard = () => {
     owed: 0,
     owed_to_you: 0,
   });
-  const userInfo = JSON.parse(localStorage.getItem("user"))
+  const userInfo = JSON.parse(localStorage.getItem("user"));
   const options = {
     maintainAspectRatio: true,
     aspectRatio: 1,
@@ -49,7 +49,7 @@ const Dashboard = () => {
     },
   };
 
-  const navigate= useNavigate()
+  const navigate = useNavigate();
 
   const fetchTransactions = useCallback(async () => {
     try {
@@ -60,37 +60,32 @@ const Dashboard = () => {
     }
   }, [year, month]);
 
-  const getUserDebts = useCallback(async () =>{
-    try{
-      const resp = await getDebts()
+  const getUserDebts = useCallback(async () => {
+    try {
+      const resp = await getDebts();
       console.log(resp);
       let amount = 0;
       let debt = {
         owed: 0,
-        owed_to_you: 0
-      }
-      resp.forEach(element => {
-        if (element.owed_to === userInfo.id || element.debt_type === 'Bank') {
+        owed_to_you: 0,
+      };
+      resp.forEach((element) => {
+        if (element.owed_to === userInfo.id || element.debt_type === "Bank") {
           debt.owed = debt.owed + element.amount;
         }
-        amount = amount + element.amount; 
+        amount = amount + element.amount;
       });
       debt.owed_to_you = amount - debt.owed;
-      setTotalDebt(debt)
-    }
-    catch(error){
-
-    }
-  },[userInfo])
+      setTotalDebt(debt);
+    } catch (error) {}
+  }, []);
 
   useEffect(() => {
     fetchTransactions();
-    getUserDebts()
-  }, [fetchTransactions,getUserDebts]);
-
+    getUserDebts();
+  }, [fetchTransactions, getUserDebts]);
 
   useEffect(() => {
-    
     const expenses = transactions
       .filter((transaction) => transaction.type !== "investment")
       .reduce((total, transaction) => total + transaction.amount, 0);
@@ -127,27 +122,51 @@ const Dashboard = () => {
             "#FFCE56",
             "#4BC0C0",
             "#9966FF",
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
-            "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
+            "#000000".replace(/0/g, function () {
+              return (~~(Math.random() * 16)).toString(16);
+            }),
           ],
         },
       ],
     });
   }, [transactions]);
 
-  const navigateToDebts = () =>{
-    navigate('/debts')
-  }
+  const navigateToDebts = () => {
+    navigate("/debts");
+  };
 
   const handleAddTransaction = (newTransaction) => {
     setTransactions([...transactions, newTransaction]);
@@ -167,15 +186,18 @@ const Dashboard = () => {
           <h3 className="text-lg font-semibold">Total Expenses</h3>
           <p className="text-xl font-bold">{totalExpenses}</p>
         </div>
-        { (totalDebt.owed > 0 || totalDebt.owed_to_you > 0) && (
-          <div className="p-4 bg-blue-100 text-blue-800 rounded shadow" onClick={navigateToDebts}>
-            <div className="flex">
-            <h3 className="text-lg font-semibold">Debt Owed</h3>
-            <p className="text-xl font-bold">{totalDebt.owed}</p>
+        {(totalDebt.owed > 0 || totalDebt.owed_to_you > 0) && (
+          <div
+            className="p-4 bg-blue-100 text-blue-800 rounded shadow"
+            onClick={navigateToDebts}
+          >
+            <div className="flex gap-2">
+              <h3 className="text-lg font-semibold">Debt Owed</h3>
+              <p className="text-xl font-bold">{totalDebt.owed}</p>
             </div>
-            <div className="flex">
-            <h3 className="text-lg font-semibold">Debt Owed to you</h3>
-            <p className="text-xl font-bold">{totalDebt.owed_to_you}</p>
+            <div className="flex gap-2">
+              <h3 className="text-lg font-semibold">Debt Owed to you</h3>
+              <p className="text-xl font-bold">{totalDebt.owed_to_you}</p>
             </div>
           </div>
         )}
