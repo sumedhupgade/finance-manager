@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const Header = ({ setUser }) => {
   const navigate = useNavigate();
   const [showMenu, setMenu] = useState(false);
+  const userInfo = JSON.parse(localStorage.getItem("user"))
   const logOut = async (e) => {
     try {
       auth.signOut().then((resp) => {
@@ -28,12 +29,13 @@ const Header = ({ setUser }) => {
             <span className="sr-only">Finance</span>
             <img
               className="h-8 w-auto"
-              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+              src="./assets/img/ft.png"
               alt=""
             />
           </a>
         </div>
-        <div className="flex lg:hidden">
+        <div className="me-2">{userInfo.username}</div>
+        <div className="flex">
           <button
             type="button"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
@@ -56,18 +58,9 @@ const Header = ({ setUser }) => {
             </svg>
           </button>
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <button
-            type="button"
-            onClick={logOut}
-            className="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-          >
-            Log Out
-          </button>
-        </div>
       </nav>
       {showMenu && (
-        <div className="lg:hidden" role="dialog" aria-modal="true">
+        <div role="dialog" aria-modal="true">
           <div className="fixed inset-0 z-10"></div>
           <div className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div className="flex items-center justify-between">
@@ -75,7 +68,7 @@ const Header = ({ setUser }) => {
                 <span className="sr-only">Your Company</span>
                 <img
                   className="h-8 w-auto"
-                  src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                  src="./assets/img/ft.png"
                   alt=""
                 />
               </a>
@@ -109,6 +102,18 @@ const Header = ({ setUser }) => {
                       className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                     >
                       Log out
+                    </a>
+                    <a
+                      href="/profile"
+                      className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    >
+                      Profile
+                    </a>
+                    <a
+                      href="/debts"
+                      className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                    >
+                      Debts
                     </a>
                 </div>
               </div>

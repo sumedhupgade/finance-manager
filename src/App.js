@@ -8,7 +8,10 @@ import PageNotFound from "./components/PageNotFound";
 import Header from "./components/common/Header";
 import Loader from "./components/common/Loader";
 import AuthWrapper from "./AuthWrapper";
+import Debts from "./components/debt/Debt";
+import Profile from "./components/profile/profile";
 import { LoadingProvider } from "./context/LoadingContext";
+
 const App = () => {
   const [user, setUser] = useState(null);
 
@@ -32,7 +35,7 @@ const App = () => {
                   <Login setUser={setUser} />
                 </AuthWrapper>
               }
-            ></Route>
+            />
             <Route
               path="/signup"
               element={
@@ -40,7 +43,7 @@ const App = () => {
                   <Signup setUser={setUser} />
                 </AuthWrapper>
               }
-            ></Route>
+            />
             <Route
               path="/dashboard"
               element={
@@ -48,7 +51,23 @@ const App = () => {
                   <Dashboard />
                 </AuthWrapper>
               }
-            ></Route>
+            />
+            <Route
+              path="/debts"
+              element={
+                <AuthWrapper requiresAuth={true}>
+                  <Debts />
+                </AuthWrapper>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <AuthWrapper requiresAuth={true}>
+                  <Profile />
+                </AuthWrapper>
+              }
+            />
             <Route path="*" element={<PageNotFound />}></Route>
           </Routes>
         </div>
