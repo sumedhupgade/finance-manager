@@ -1,6 +1,6 @@
 import axiosInstance from '../context/LoadingContext'
 const API_URL = process.env.REACT_APP_API_URL + "user";
-const getAuthConfig = () => {
+export const getAuthConfig = () => {
   const token = localStorage.getItem("token");
   return {
     headers: { Authorization: `Bearer ${token}` },

@@ -10,6 +10,7 @@ import {
 } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import { getTransactions } from "../../services/transactionService";
+import { getHoldings } from "../../services/portfolio";
 import AddTransaction from "./AddTransaction";
 import TransactionList from "./TransactionList";
 import { getDebts } from "../../services/debtService";
@@ -26,8 +27,21 @@ ChartJS.register(
 
 const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);
-  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [totalExpenses, setTotalExpenses] = useState({
+    total: 0,
+    emi: 0,
+    personal: 0,
+  });
   const [totalInvestment, setTotalInvestment] = useState(0);
+  const [investments, setInvestments] = useState({
+    total: 0,
+    nps: 0,
+    mutualFunds: 0,
+    fixedDeposits: 0,
+    stocks: 0,
+    lic: 0,
+    ppf: 0,
+  });
   const [categoryData, setCategoryData] = useState({});
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -60,6 +74,13 @@ const Dashboard = () => {
     }
   }, [year, month]);
 
+  const fetchHoldings = useCallback(async () => {
+    try {
+      const resp = await getHoldings();
+      console.log(resp);
+    } catch (error) {}
+  }, []);
+
   const getUserDebts = useCallback(async () => {
     try {
       const resp = await getDebts();
@@ -83,32 +104,83 @@ const Dashboard = () => {
   useEffect(() => {
     fetchTransactions();
     getUserDebts();
+    // fetchHoldings();
   }, [fetchTransactions, getUserDebts]);
 
   useEffect(() => {
-    const expenses = transactions
-      .filter((transaction) => transaction.type !== "investment")
-      .reduce((total, transaction) => total + transaction.amount, 0);
-    setTotalExpenses(expenses);
-
-    const investment = transactions
-      .filter((transaction) => transaction.type === "investment")
-      .reduce((total, transaction) => total + transaction.amount, 0);
-    setTotalInvestment(investment);
-
+    // Calculate expenses
+    let expenses = 0,
+      emi = 0,
+      personal = 0,
+      investment = 0;
     const categoryTotals = {};
-    transactions.forEach((transaction) => {
-      const { type, amount, date } = transaction;
-      if (!categoryTotals[type]) {
-        categoryTotals[type] = 0;
-      }
-      categoryTotals[type] += amount;
-      transaction.date = new Intl.DateTimeFormat("en-US", {
+    const investmentTypes = {
+      nps: /nps/i,
+      mf: /(mf|sip)/i,
+      fd: /fd/i,
+      stocks: /stock/i,
+      lic: /lic/i,
+      ppf: /ppf/i,
+    };
+    const investmentsCalc = {
+      total: 0,
+      nps: 0,
+      mf: 0,
+      fd: 0,
+      stocks: 0,
+      lic: 0,
+      ppf: 0,
+    };
+
+    transactions.forEach((t) => {
+      const { type, amount, description, date } = t;
+      // Format date
+      t.date = new Intl.DateTimeFormat("en-US", {
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
       }).format(new Date(date));
+
+      // Category totals
+      categoryTotals[type] = (categoryTotals[type] || 0) + amount;
+
+      // Expenses
+      if (type !== "investment") {
+        expenses += amount;
+        if (type === "EMI") emi += amount;
+        else personal += amount;
+      }
+
+      // Investments
+      if (type === "investment") {
+        investment += amount;
+        investmentsCalc.total += amount;
+        Object.entries(investmentTypes).forEach(([key, regex]) => {
+          if (description && regex.test(description)) {
+            investmentsCalc[key] += amount;
+          }
+        });
+      }
     });
+
+    setTotalExpenses({ total: expenses, emi, personal });
+    setTotalInvestment(investment);
+    setInvestments(investmentsCalc);
+
+    // Pie chart colors
+    const baseColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
+    const genColor = () =>
+      "#" +
+      Math.floor(Math.random() * 16777215)
+        .toString(16)
+        .padStart(6, "0");
+    const colorCount = Object.keys(categoryTotals).length;
+    const backgroundColor = [
+      ...baseColors,
+      ...Array(Math.max(0, colorCount - baseColors.length))
+        .fill()
+        .map(genColor),
+    ].slice(0, colorCount);
 
     setCategoryData({
       labels: Object.keys(categoryTotals),
@@ -116,49 +188,7 @@ const Dashboard = () => {
         {
           label: "Expenses by Category",
           data: Object.values(categoryTotals),
-          backgroundColor: [
-            "#FF6384",
-            "#36A2EB",
-            "#FFCE56",
-            "#4BC0C0",
-            "#9966FF",
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-            "#000000".replace(/0/g, function () {
-              return (~~(Math.random() * 16)).toString(16);
-            }),
-          ],
+          backgroundColor,
         },
       ],
     });
@@ -169,7 +199,7 @@ const Dashboard = () => {
   };
 
   const handleAddTransaction = (newTransaction) => {
-    setTransactions([...transactions, newTransaction]);
+    setTransactions([newTransaction, ...transactions]);
   };
 
   const handelDelete = (index) => {
@@ -180,60 +210,184 @@ const Dashboard = () => {
 
   // Update the JSX with Tailwind classes
   return (
-    <div className="p-4 max-w-screen-lg mx-auto">
-      <div className="grid lg:grid-cols-3 gap-4 mb-4">
-        <div className="p-4 bg-red-100 text-red-800 rounded shadow">
-          <h3 className="text-lg font-semibold">Total Expenses</h3>
-          <p className="text-xl font-bold">{totalExpenses}</p>
+    <div className="p-2 sm:p-4 max-w-screen-xl mx-auto">
+      <div className="mb-6">
+        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4 sm:p-6 flex flex-col sm:gap-4">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Financial Overview
+          </h2>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
+            {/* Expenses */}
+            <div className="flex flex-col items-start flex-1">
+              <span className="text-sm font-semibold text-red-600">
+                Total Expenses
+              </span>
+              <span className="text-2xl font-bold text-red-800">
+                {totalExpenses.total}
+              </span>
+              <div className="flex gap-4 mt-2">
+                <div>
+                  <span className="text-[13px] text-red-500">EMI:</span>
+                  <span className="ml-1 font-semibold text-red-700">
+                    {totalExpenses.emi}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[13px] text-red-500">Personal:</span>
+                  <span className="ml-1 font-semibold text-red-700">
+                    {totalExpenses.personal}
+                  </span>
+                </div>
+              </div>
+            </div>
+            {/* Separator */}
+            <div className="sm:mx-4 self-stretch">
+              <div className="sm:w-px sm:h-full w-full h-px bg-gray-300"></div>
+            </div>
+            {/* Debts */}
+            {(totalDebt.owed > 0 || totalDebt.owed_to_you > 0) && (
+              <div className="flex flex-col items-start flex-1">
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-sm font-semibold text-blue-600">
+                  Debts
+                </span>
+                  <button
+                    className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition"
+                    onClick={navigateToDebts}
+                  >
+                    View
+                  </button>
+                </div>
+                
+                <span className="text-2xl font-bold text-blue-800">
+                  {totalDebt.owed}
+                </span>
+                <div className="flex gap-4 mt-2 items-center">
+                  <div>
+                    <span className="text-[13px] text-blue-500">
+                      Owed to you:
+                    </span>
+                    <span className="ml-1 font-semibold text-blue-700">
+                      {totalDebt.owed_to_you}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+            {/* Separator */}
+            {totalInvestment > 0 && (
+              <div className="sm:mx-4 self-stretch">
+                <div className="sm:w-px sm:h-full w-full h-px bg-gray-300"></div>
+              </div>
+            )}
+            {/* Investments */}
+                  {investments.total > 0 && (
+                    <div className="flex flex-col items-start flex-1">
+                    <span className="text-sm font-semibold text-green-600">
+                      Investments
+                    </span>
+                    <span className="text-2xl font-bold text-green-800">
+                      {investments.total}
+                    </span>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-1 mt-2 text-[13px]">
+                      {investments.mf > 0 && (
+                      <div className="flex items-center">
+                        <span className="text-green-700 font-semibold">
+                        Mutual Funds:
+                        </span>
+                        <span className="ml-1 text-green-800">
+                        {investments.mf}
+                        </span>
+                      </div>
+                      )}
+                      {investments.stocks > 0 && (
+                      <div className="flex items-center">
+                        <span className="text-green-700 font-semibold">
+                        Stocks:
+                        </span>
+                        <span className="ml-1 text-green-800">
+                        {investments.stocks}
+                        </span>
+                      </div>
+                      )}
+                      {investments.nps > 0 && (
+                      <div className="flex items-center">
+                        <span className="text-green-700 font-semibold">NPS:</span>
+                        <span className="ml-1 text-green-800">
+                        {investments.nps}
+                        </span>
+                      </div>
+                      )}
+                      {investments.ppf > 0 && (
+                      <div className="flex items-center">
+                        <span className="text-green-700 font-semibold">PPF:</span>
+                        <span className="ml-1 text-green-800">
+                        {investments.ppf}
+                        </span>
+                      </div>
+                      )}
+                      {investments.fd > 0 && (
+                      <div className="flex items-center">
+                        <span className="text-green-700 font-semibold">FD:</span>
+                        <span className="ml-1 text-green-800">
+                        {investments.fd}
+                        </span>
+                      </div>
+                      )}
+                      {investments.lic > 0 && (
+                      <div className="flex items-center">
+                        <span className="text-green-700 font-semibold">LIC:</span>
+                        <span className="ml-1 text-green-800">
+                        {investments.lic}
+                        </span>
+                      </div>
+                      )}
+                    </div>
+                    </div>
+                  )}
+                  </div>
+                </div>
+                </div>
+
+                {/* Add Transaction */}
+      <div className="mb-6">
+        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4">
+          <h3 className="text-lg font-semibold mb-2 text-gray-700">
+            Add Transaction
+          </h3>
+          <AddTransaction handleSave={handleAddTransaction} />
         </div>
-        {(totalDebt.owed > 0 || totalDebt.owed_to_you > 0) && (
-          <div
-            className="p-4 bg-blue-100 text-blue-800 rounded shadow"
-            onClick={navigateToDebts}
-          >
-            <div className="flex gap-2">
-              <h3 className="text-lg font-semibold">Debt Owed</h3>
-              <p className="text-xl font-bold">{totalDebt.owed}</p>
-            </div>
-            <div className="flex gap-2">
-              <h3 className="text-lg font-semibold">Debt Owed to you</h3>
-              <p className="text-xl font-bold">{totalDebt.owed_to_you}</p>
-            </div>
-          </div>
-        )}
-        {totalInvestment > 0 && (
-          <div className="p-4 bg-green-100 text-green-800 rounded shadow">
-            <h3 className="text-lg font-semibold">Investments</h3>
-            <p className="text-xl font-bold">{totalInvestment}</p>
-          </div>
-        )}
       </div>
 
-      <div className="mb-4">
-        <h3 className="text-xl font-semibold mb-2">Add Transactions</h3>
-        <AddTransaction handleSave={handleAddTransaction}></AddTransaction>
-      </div>
-      <div className="mb-4">
-        <TransactionList
-          transactions={transactions}
-          handelDelete={handelDelete}
-          handelMonthChange={setMonth}
-          handelYearChange={setYear}
-          month={month}
-          year={year}
-        />
+      {/* Transaction List */}
+      <div className="mb-6">
+        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4">
+          <TransactionList
+            transactions={transactions}
+            handelDelete={handelDelete}
+            handelMonthChange={setMonth}
+            handelYearChange={setYear}
+            month={month}
+            year={year}
+          />
+        </div>
       </div>
 
-      <div
-        className="p-4 bg-white rounded shadow-lg min-w-fit"
-        style={{ width: "fit-content", maxWidth: "100%" }}
-      >
-        <h3 className="text-xl font-semibold mb-2">Charts</h3>
-        {categoryData.labels && categoryData.datasets && (
-          <div style={{ minHeight: "200px", maxHeight: "450px" }}>
-            <Pie data={categoryData} options={options} />
-          </div>
-        )}
+      {/* Chart */}
+      <div className="mb-6">
+        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4">
+          <h3 className="text-lg font-semibold mb-2 text-gray-700">
+            Expense Breakdown
+          </h3>
+          {categoryData.labels && categoryData.datasets && (
+            <div
+              className="flex justify-center items-center"
+              style={{ minHeight: "220px", maxHeight: "350px" }}
+            >
+              <Pie data={categoryData} options={options} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

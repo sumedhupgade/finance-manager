@@ -1,11 +1,7 @@
 import axiosInstance from '../context/LoadingContext'
+import { getAuthConfig } from "./userService";
 const API_URL = process.env.REACT_APP_API_URL + "transactions";
-const getAuthConfig = () => {
-  const token = localStorage.getItem("token");
-  return {
-    headers: { Authorization: `Bearer ${token}` },
-  };
-};
+
 export const getTransactions = async (year,month) => {
   try {
     const response = await axiosInstance.get(`${API_URL}?year=${year}&month=${month}`, getAuthConfig());

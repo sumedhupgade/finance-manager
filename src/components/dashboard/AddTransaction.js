@@ -3,7 +3,7 @@ import { addTransactions } from "../../services/transactionService";
 
 const AddTransaction = ({ handleSave }) => {
   const [form, SetForm] = useState({
-    type: "Sabji",
+    type: "Home",
     description: "",
     date: new Date(),
     amount: "",
@@ -23,7 +23,7 @@ const AddTransaction = ({ handleSave }) => {
       const newTransaction = await addTransactions(form);
       handleSave(newTransaction, form);
       SetForm({
-        type: "Sabji",
+        type: "Home",
         description: "",
         date: new Date(),
         amount: "",
@@ -34,9 +34,8 @@ const AddTransaction = ({ handleSave }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-white rounded shadow-lg mb-4 md:mb-0 grid grid-cols-1 flex-col md:grid-cols-4 md:flex-row gap-4 items-center"
+      className="p-4 bg-white rounded shadow-lg mb-4 md:mb-0 grid grid-cols-1 flex-col md:grid-cols-5 md:flex-row gap-4 items-center"
     >
-      
       <div className="">
         <input
           type="number"
@@ -49,8 +48,13 @@ const AddTransaction = ({ handleSave }) => {
         />
       </div>
       <div className="">
-        <select value={form.type} required name="type" onChange={handleChange}
-        className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+        <select
+          value={form.type}
+          required
+          name="type"
+          onChange={handleChange}
+          className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        >
           <option value="Home">Home</option>
           <option value="sabji">Sabji</option>
           <option value="kirana">Kirana</option>
@@ -72,6 +76,16 @@ const AddTransaction = ({ handleSave }) => {
           name="description"
           value={form.description}
           onChange={handleChange}
+          className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        />
+      </div>
+      <div className="">
+        <input
+          type="date"
+          name="date"
+          value={form.date instanceof Date ? form.date.toISOString().slice(0, 10) : form.date}
+          onChange={handleChange}
+          required
           className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
         />
       </div>

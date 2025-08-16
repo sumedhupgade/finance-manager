@@ -15,8 +15,39 @@ const TransactionList = ({
       transactions.splice(index, 1);
     } catch (error) {}
   };
+  const [sortConfig, setSortConfig] = React.useState({ key: 'date', direction: "asc" });
+
+  const sortedTransactions = React.useMemo(() => {
+    if (!transactions) return [];
+    const sortable = [...transactions];
+    if (sortConfig.key) {
+      sortable.sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+        // For date, sort as Date objects
+        if (sortConfig.key === "date") {
+          aValue = new Date(aValue);
+          bValue = new Date(bValue);
+        }
+        if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+    return sortable;
+  }, [transactions, sortConfig]);
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        return { key, direction: prev.direction === "asc" ? "desc" : "asc" };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
   return (
-    <div className="p-4 bg-white rounded shadow-lg">
+    <div className="bg-gradient-to-r from-blue-50 to-green-50">
       <div className="flex sm:flex-row mb-4 flex-col align-center sm:gap-2 gap-1">
         <h2 className="text-2xl font-bold">Recent Transactions</h2>
         <div className="sm:ml-auto flex gap-2">
@@ -62,30 +93,60 @@ const TransactionList = ({
           </select>
         </div>
       </div>
-      <ul>
-        {transactions &&
-          transactions.map((transaction, index) => (
-            <li
-              key={transaction._id}
-              className="flex justify-between items-start py-2 border-b"
-            >
-              <span className="pr-1">
-                Rs {transaction.amount} ({transaction.type}) - {transaction.date} -{" "}
-                {transaction.description} 
-              </span>
-              <button
-                onClick={() => removeTransaction(transaction._id, index)}
-                className="text-red-500 hover:text-red-700"
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-
-        {transactions.length === 0 && (
-          <div className="empty-state">No Transaction Found</div>
-        )}
-      </ul>
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-full bg-white border rounded text-sm sm:text-base">
+          <thead>
+            <tr>
+              <th className="py-2 px-2 sm:px-4 border-b text-left cursor-pointer whitespace-nowrap" onClick={() => handleSort("amount")}>
+                Amount {sortConfig.key === "amount" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+              </th>
+              <th className="py-2 px-2 sm:px-4 border-b text-left cursor-pointer whitespace-nowrap" onClick={() => handleSort("type")}>
+                Type {sortConfig.key === "type" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+              </th>
+              <th className="py-2 px-2 sm:px-4 border-b text-left cursor-pointer whitespace-nowrap" onClick={() => handleSort("date")}>
+                Date {sortConfig.key === "date" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+              </th>
+              <th className="py-2 px-2 sm:px-4 border-b text-left cursor-pointer whitespace-nowrap" onClick={() => handleSort("description")}>
+                Description {sortConfig.key === "description" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+              </th>
+              <th className="py-2 px-2 sm:px-4 border-b text-left whitespace-nowrap">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedTransactions && sortedTransactions.map((transaction, index) => (
+              <tr key={transaction._id}>
+                <td className="py-2 px-2 sm:px-4 border-b whitespace-nowrap">Rs {transaction.amount}</td>
+                <td className="py-2 px-2 sm:px-4 border-b whitespace-nowrap">{transaction.type}</td>
+                <td className="py-2 px-2 sm:px-4 border-b whitespace-nowrap">{transaction.date}</td>
+                <td className="py-2 px-2 sm:px-4 border-b">{transaction.description}</td>
+                <td className="py-2 px-2 sm:px-4 border-b whitespace-nowrap">
+                  <button
+                    onClick={() => removeTransaction(transaction._id, index)}
+                    className="text-red-500 hover:text-red-700"
+                    aria-label="Delete"
+                  >
+                    {/* Bin Icon with fixed border */}
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <rect x="6" y="7" width="12" height="13" rx="2" stroke="currentColor" strokeWidth="2" fill="none"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} stroke="currentColor" d="M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} stroke="currentColor" d="M5 7h14"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} stroke="currentColor" d="M10 11v6"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} stroke="currentColor" d="M14 11v6"/>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {sortedTransactions.length === 0 && (
+              <tr>
+                <td colSpan="5" className="py-4 text-center text-gray-500">
+                  No Transaction Found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
