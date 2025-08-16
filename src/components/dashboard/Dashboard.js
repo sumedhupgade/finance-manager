@@ -211,183 +211,182 @@ const Dashboard = () => {
   // Update the JSX with Tailwind classes
   return (
     <div className="p-2 sm:p-4 max-w-screen-xl mx-auto">
-      <div className="mb-6">
-        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4 sm:p-6 flex flex-col sm:gap-4">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+      <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4 sm:p-6 flex flex-col gap-2 sm:gap-4 mb-6">
+        <div className="flex sm:flex-row justify-between items-start sm:items-center">
+          <h2 className="text-2xl font-bold text-gray-800 sm:mb-2">
             Financial Overview
           </h2>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
-            {/* Expenses */}
+          <div className="mt-2 text-[13px] text-gray-500">
+            {new Date(year, month - 1).toLocaleString("default", {
+              month: "short",
+            })}
+            , {year}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
+          {/* Expenses */}
+          <div className="flex flex-col items-start flex-1">
+            <span className="text-sm font-semibold text-red-600">
+              Total Expenses
+            </span>
+            <span className="text-2xl font-bold text-red-800">
+              {totalExpenses.total}
+            </span>
+            <div className="flex gap-4 mt-2">
+              <div>
+                <span className="text-[13px] text-red-500">EMI:</span>
+                <span className="ml-1 font-semibold text-red-700">
+                  {totalExpenses.emi}
+                </span>
+              </div>
+              <div>
+                <span className="text-[13px] text-red-500">Personal:</span>
+                <span className="ml-1 font-semibold text-red-700">
+                  {totalExpenses.personal}
+                </span>
+              </div>
+            </div>
+          </div>
+          {/* Separator */}
+          <div className="sm:mx-4 self-stretch">
+            <div className="sm:w-px sm:h-full w-full h-px bg-gray-300"></div>
+          </div>
+          {/* Debts */}
+          {(totalDebt.owed > 0 || totalDebt.owed_to_you > 0) && (
             <div className="flex flex-col items-start flex-1">
-              <span className="text-sm font-semibold text-red-600">
-                Total Expenses
+              <div className="flex items-center justify-between w-full">
+                <span className="text-sm font-semibold text-blue-600">
+                  Debts
+                </span>
+                <button
+                  className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition"
+                  onClick={navigateToDebts}
+                >
+                  View
+                </button>
+              </div>
+
+              <span className="text-2xl font-bold text-blue-800">
+                {totalDebt.owed}
               </span>
-              <span className="text-2xl font-bold text-red-800">
-                {totalExpenses.total}
-              </span>
-              <div className="flex gap-4 mt-2">
+              <div className="flex gap-4 mt-2 items-center">
                 <div>
-                  <span className="text-[13px] text-red-500">EMI:</span>
-                  <span className="ml-1 font-semibold text-red-700">
-                    {totalExpenses.emi}
+                  <span className="text-[13px] text-blue-500">
+                    Owed to you:
                   </span>
-                </div>
-                <div>
-                  <span className="text-[13px] text-red-500">Personal:</span>
-                  <span className="ml-1 font-semibold text-red-700">
-                    {totalExpenses.personal}
+                  <span className="ml-1 font-semibold text-blue-700">
+                    {totalDebt.owed_to_you}
                   </span>
                 </div>
               </div>
             </div>
-            {/* Separator */}
+          )}
+          {/* Separator */}
+          {totalInvestment > 0 && (
             <div className="sm:mx-4 self-stretch">
               <div className="sm:w-px sm:h-full w-full h-px bg-gray-300"></div>
             </div>
-            {/* Debts */}
-            {(totalDebt.owed > 0 || totalDebt.owed_to_you > 0) && (
-              <div className="flex flex-col items-start flex-1">
-                <div className="flex items-center justify-between w-full">
-                  <span className="text-sm font-semibold text-blue-600">
-                  Debts
-                </span>
-                  <button
-                    className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition"
-                    onClick={navigateToDebts}
-                  >
-                    View
-                  </button>
-                </div>
-                
-                <span className="text-2xl font-bold text-blue-800">
-                  {totalDebt.owed}
-                </span>
-                <div className="flex gap-4 mt-2 items-center">
-                  <div>
-                    <span className="text-[13px] text-blue-500">
-                      Owed to you:
+          )}
+          {/* Investments */}
+          {investments.total > 0 && (
+            <div className="flex flex-col items-start flex-1">
+              <span className="text-sm font-semibold text-green-600">
+                Investments
+              </span>
+              <span className="text-2xl font-bold text-green-800">
+                {investments.total}
+              </span>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-1 mt-2 text-[13px]">
+                {investments.mf > 0 && (
+                  <div className="flex items-center">
+                    <span className="text-green-700 font-semibold">
+                      Mutual Funds:
                     </span>
-                    <span className="ml-1 font-semibold text-blue-700">
-                      {totalDebt.owed_to_you}
+                    <span className="ml-1 text-green-800">
+                      {investments.mf}
                     </span>
                   </div>
-                </div>
-              </div>
-            )}
-            {/* Separator */}
-            {totalInvestment > 0 && (
-              <div className="sm:mx-4 self-stretch">
-                <div className="sm:w-px sm:h-full w-full h-px bg-gray-300"></div>
-              </div>
-            )}
-            {/* Investments */}
-                  {investments.total > 0 && (
-                    <div className="flex flex-col items-start flex-1">
-                    <span className="text-sm font-semibold text-green-600">
-                      Investments
+                )}
+                {investments.stocks > 0 && (
+                  <div className="flex items-center">
+                    <span className="text-green-700 font-semibold">
+                      Stocks:
                     </span>
-                    <span className="text-2xl font-bold text-green-800">
-                      {investments.total}
+                    <span className="ml-1 text-green-800">
+                      {investments.stocks}
                     </span>
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-1 mt-2 text-[13px]">
-                      {investments.mf > 0 && (
-                      <div className="flex items-center">
-                        <span className="text-green-700 font-semibold">
-                        Mutual Funds:
-                        </span>
-                        <span className="ml-1 text-green-800">
-                        {investments.mf}
-                        </span>
-                      </div>
-                      )}
-                      {investments.stocks > 0 && (
-                      <div className="flex items-center">
-                        <span className="text-green-700 font-semibold">
-                        Stocks:
-                        </span>
-                        <span className="ml-1 text-green-800">
-                        {investments.stocks}
-                        </span>
-                      </div>
-                      )}
-                      {investments.nps > 0 && (
-                      <div className="flex items-center">
-                        <span className="text-green-700 font-semibold">NPS:</span>
-                        <span className="ml-1 text-green-800">
-                        {investments.nps}
-                        </span>
-                      </div>
-                      )}
-                      {investments.ppf > 0 && (
-                      <div className="flex items-center">
-                        <span className="text-green-700 font-semibold">PPF:</span>
-                        <span className="ml-1 text-green-800">
-                        {investments.ppf}
-                        </span>
-                      </div>
-                      )}
-                      {investments.fd > 0 && (
-                      <div className="flex items-center">
-                        <span className="text-green-700 font-semibold">FD:</span>
-                        <span className="ml-1 text-green-800">
-                        {investments.fd}
-                        </span>
-                      </div>
-                      )}
-                      {investments.lic > 0 && (
-                      <div className="flex items-center">
-                        <span className="text-green-700 font-semibold">LIC:</span>
-                        <span className="ml-1 text-green-800">
-                        {investments.lic}
-                        </span>
-                      </div>
-                      )}
-                    </div>
-                    </div>
-                  )}
                   </div>
-                </div>
-                </div>
-
-                {/* Add Transaction */}
-      <div className="mb-6">
-        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700">
-            Add Transaction
-          </h3>
-          <AddTransaction handleSave={handleAddTransaction} />
-        </div>
-      </div>
-
-      {/* Transaction List */}
-      <div className="mb-6">
-        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4">
-          <TransactionList
-            transactions={transactions}
-            handelDelete={handelDelete}
-            handelMonthChange={setMonth}
-            handelYearChange={setYear}
-            month={month}
-            year={year}
-          />
-        </div>
-      </div>
-
-      {/* Chart */}
-      <div className="mb-6">
-        <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4">
-          <h3 className="text-lg font-semibold mb-2 text-gray-700">
-            Expense Breakdown
-          </h3>
-          {categoryData.labels && categoryData.datasets && (
-            <div
-              className="flex justify-center items-center"
-              style={{ minHeight: "220px", maxHeight: "350px" }}
-            >
-              <Pie data={categoryData} options={options} />
+                )}
+                {investments.nps > 0 && (
+                  <div className="flex items-center">
+                    <span className="text-green-700 font-semibold">NPS:</span>
+                    <span className="ml-1 text-green-800">
+                      {investments.nps}
+                    </span>
+                  </div>
+                )}
+                {investments.ppf > 0 && (
+                  <div className="flex items-center">
+                    <span className="text-green-700 font-semibold">PPF:</span>
+                    <span className="ml-1 text-green-800">
+                      {investments.ppf}
+                    </span>
+                  </div>
+                )}
+                {investments.fd > 0 && (
+                  <div className="flex items-center">
+                    <span className="text-green-700 font-semibold">FD:</span>
+                    <span className="ml-1 text-green-800">
+                      {investments.fd}
+                    </span>
+                  </div>
+                )}
+                {investments.lic > 0 && (
+                  <div className="flex items-center">
+                    <span className="text-green-700 font-semibold">LIC:</span>
+                    <span className="ml-1 text-green-800">
+                      {investments.lic}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
+      </div>
+      {/* Add Transaction */}
+      <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4 mb-6">
+        <h3 className="text-lg font-semibold mb-2 text-gray-700">
+          Add Transaction
+        </h3>
+        <AddTransaction handleSave={handleAddTransaction} />
+      </div>
+      {/* Transaction List */}
+      <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4 mb-6">
+        <TransactionList
+          transactions={transactions}
+          handelDelete={handelDelete}
+          handelMonthChange={setMonth}
+          handelYearChange={setYear}
+          month={month}
+          year={year}
+        />
+      </div>
+
+      {/* Chart */}
+      <div className="bg-gradient-to-r from-blue-50 to-green-50 rounded-xl shadow-lg p-4">
+        <h3 className="text-lg font-semibold mb-2 text-gray-700">
+          Expense Breakdown
+        </h3>
+        {categoryData.labels && categoryData.datasets && (
+          <div
+            className="flex justify-center items-center"
+            style={{ minHeight: "220px", maxHeight: "350px" }}
+          >
+            <Pie data={categoryData} options={options} />
+          </div>
+        )}
       </div>
     </div>
   );
