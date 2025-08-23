@@ -10,7 +10,7 @@ import {
 } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import { getTransactions } from "../../services/transactionService";
-import { getHoldings } from "../../services/portfolio";
+// import { getHoldings } from "../../services/portfolio";
 import AddTransaction from "./AddTransaction";
 import TransactionList from "./TransactionList";
 import { getDebts } from "../../services/debtService";
@@ -41,6 +41,7 @@ const Dashboard = () => {
     stocks: 0,
     lic: 0,
     ppf: 0,
+    us: 0,
   });
   const [categoryData, setCategoryData] = useState({});
   const [year, setYear] = useState(new Date().getFullYear());
@@ -74,12 +75,12 @@ const Dashboard = () => {
     }
   }, [year, month]);
 
-  const fetchHoldings = useCallback(async () => {
-    try {
-      const resp = await getHoldings();
-      console.log(resp);
-    } catch (error) {}
-  }, []);
+  // const fetchHoldings = useCallback(async () => {
+  //   try {
+  //     const resp = await getHoldings();
+  //     console.log(resp);
+  //   } catch (error) {}
+  // }, []);
 
   const getUserDebts = useCallback(async () => {
     try {
@@ -99,7 +100,7 @@ const Dashboard = () => {
       debt.owed_to_you = amount - debt.owed;
       setTotalDebt(debt);
     } catch (error) {}
-  }, []);
+  }, [userInfo.id]);
 
   useEffect(() => {
     fetchTransactions();
@@ -121,6 +122,7 @@ const Dashboard = () => {
       stocks: /stock/i,
       lic: /lic/i,
       ppf: /ppf/i,
+      us: /us/i,
     };
     const investmentsCalc = {
       total: 0,
@@ -130,6 +132,7 @@ const Dashboard = () => {
       stocks: 0,
       lic: 0,
       ppf: 0,
+      us: 0,
     };
 
     transactions.forEach((t) => {
@@ -156,6 +159,8 @@ const Dashboard = () => {
         investment += amount;
         investmentsCalc.total += amount;
         Object.entries(investmentTypes).forEach(([key, regex]) => {
+          console.log(description, regex.test(description));
+
           if (description && regex.test(description)) {
             investmentsCalc[key] += amount;
           }
@@ -315,6 +320,16 @@ const Dashboard = () => {
                     </span>
                     <span className="ml-1 text-green-800">
                       {investments.stocks}
+                    </span>
+                  </div>
+                )}
+                {investments.us > 0 && (
+                  <div className="flex items-center">
+                    <span className="text-green-700 font-semibold">
+                      US Stocks:
+                    </span>
+                    <span className="ml-1 text-green-800">
+                      {investments.us}
                     </span>
                   </div>
                 )}
